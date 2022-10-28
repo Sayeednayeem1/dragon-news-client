@@ -1,16 +1,28 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Button, Image } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import { FaUser } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 import LeftSideNav from '../LeftSideNav/LeftSideNav';
 
 
 const Header = () => {
+    const { user, logout } = useContext(AuthContext);
+
+    const handleLogout = () =>{
+        logout()
+        .then( () => {})
+        .catch( error => console.error(error));
+    } 
+
     return (
         <Navbar collapseOnSelect className='mb-4' expand="lg" bg="dark" variant="dark">
             <Container>
-                <Navbar.Brand href="#home">Dragon News</Navbar.Brand>
+                <Navbar.Brand> <Link to={'/'}>Dragon News</Link> </Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
@@ -29,9 +41,32 @@ const Header = () => {
                         </NavDropdown>
                     </Nav>
                     <Nav>
-                        <Nav.Link href="#deets">More deets</Nav.Link>
+                        <Nav.Link href="#deets">
+
+                            {
+                                user?.uid ?
+                                    <>
+                                        <span>{user?.displayName}</span>
+                                        <Button onClick={handleLogout} variant='light' className='rounded ms-2'>Logout</Button>
+                                    </>
+                                    :
+                                    <>
+                                        <Link to='/login'>Login</Link>
+                                        <Link to='/register'>Register</Link>
+                                    </>
+                            }
+                        </Nav.Link>
                         <Nav.Link eventKey={2} href="#memes">
-                            Dank memes
+                            {
+                                user?.photoURL ?
+                                    <Image
+                                        roundedCircle
+                                        src={user?.photoURL}
+                                        style={{ height: '30px' }}
+                                    ></Image>
+                                    :
+                                    <FaUser></FaUser>
+                            }
                         </Nav.Link>
                     </Nav>
                     <div className='d-lg-none'>
